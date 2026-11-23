@@ -1,0 +1,78 @@
+Table customer {
+  customer_id varchar [pk]
+  customer_name varchar
+  city varchar
+  email varchar [unique]
+  signup_date date
+}
+
+Table product {
+  product_id varchar [pk]
+  product_name varchar
+  category varchar
+  unit_price decimal
+  active boolean
+}
+
+Table store {
+  store_id varchar [pk]
+  store_name varchar
+  city varchar
+  active boolean
+}
+
+Table sale {
+  sale_sk bigint [pk, increment]
+  transaction_id varchar [unique]
+  customer_id varchar [not null]
+  product_id varchar [not null]
+  store_id varchar [not null]
+  quantity integer
+  unit_price decimal
+  sale_timestamp timestamp
+  payment_method varchar
+  price_status varchar
+  etl_run_id bigint
+}
+
+Table inventory_snapshot {
+  product_id varchar [pk]
+  store_id varchar [pk]
+  available_stock integer
+  reorder_level integer
+  last_updated timestamp
+  etl_run_id bigint
+}
+
+Table etl_run {
+  etl_run_id bigint [pk, increment]
+  pipeline_name varchar
+  started_at timestamp
+  finished_at timestamp
+  status varchar
+  rows_received integer
+  rows_accepted integer
+  rows_rejected integer
+  error_message text
+}
+
+Table rejected_row {
+  rejected_row_id bigint [pk, increment]
+  etl_run_id bigint [not null]
+  source_name varchar
+  source_row_number bigint
+  rejection_reason text
+  raw_row json
+  rejected_at timestamp
+}
+
+Ref: sale.customer_id > customer.customer_id
+Ref: sale.product_id > product.product_id
+Ref: sale.store_id > store.store_id
+Ref: sale.etl_run_id > etl_run.etl_run_id
+
+Ref: inventory_snapshot.product_id > product.product_id
+Ref: inventory_snapshot.store_id > store.store_id
+Ref: inventory_snapshot.etl_run_id > etl_run.etl_run_id
+
+Ref: rejected_row.etl_run_id > etl_run.etl_run_id

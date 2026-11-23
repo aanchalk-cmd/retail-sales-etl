@@ -47,3 +47,26 @@ print(
         subset=["product_id", "store_id"]
     ).sum()
 )
+
+
+sales = pd.read_csv("data/raw/sales.csv")
+
+# Find rows containing at least one missing value
+missing_records = sales[sales.isnull().any(axis=1)]
+
+# Display first 5 records
+print("First 5 records with missing values:")
+print(missing_records.head(5).to_string(index=False))
+
+
+# Find duplicate transaction IDs
+duplicate_records = sales[
+    sales.duplicated(
+        subset=["transaction_id"],
+        keep=False
+    )
+]
+
+# Display first 5 duplicate records
+print("\nFirst 5 duplicate records:")
+print(duplicate_records.head(5).to_string(index=False))
